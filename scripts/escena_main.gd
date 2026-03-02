@@ -12,9 +12,9 @@ func _ready() -> void:
 func turno_del_enemigo():
 	enemigo.enemyAttack = true
 	enemigo.preparar_ataque()
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(3.0).timeout
 	enemigo.enemyAttack = false
 	turno_del_jugador()
 
 func turno_del_jugador():
-	print("turno del jugador")
+	jugador.Attack()

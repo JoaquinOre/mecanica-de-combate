@@ -5,6 +5,8 @@ script/source = "extends Node
 @onready var escudo_izq = %escudo_izq
 @onready var escudo_der = %escudo_der
 @onready var escudo_arr = %escudo_arr
+@onready var timer_contra = %contrataque
+@export var enemy : Node2D 
 var vida = 100 
 func _ready():
 	escudo_izq.visible = false
@@ -19,11 +21,10 @@ func _process(delta: float) -> void:
 		Escudo(\"der\")
 	if Input.is_action_just_pressed(\"ARRIBA\"):
 		Escudo(\"arr\")
-
+ 
 
 
 func Escudo(posicion):
-	
 	escudo_izq.visible = false
 	escudo_der.visible = false
 	escudo_arr.visible = false
@@ -39,6 +40,29 @@ func Escudo(posicion):
 		escudo_izq.visible = false
 		escudo_der.visible = false
 		escudo_arr.visible = false
+
+func Attack():
+	print(\"turno del jugador\")
+	print(\"escogue los siguientes ataques\\n1: ataque normal\\n2: ataque fuerte\")
+	if Input.is_action_just_pressed(\"opcion 1\"):
+		print(\"ataque numero 1 realizado\")
+		enemy.vida -= 20
+	elif Input.is_action_just_pressed(\"opcion 2\"):
+		print(\"ataque numero 2 realizado\")
+		enemy.vida -= 30
+	pass
+
+# contra ataque no funciona  
+func contrataque():
+	print(\"puedes contratacar! presiona SPACE\")
+	timer_contra.start()
+	if Input.is_action_just_pressed(\"Space\") and !timer_contra.is_stopped():
+		print(\"haz contratacado!\")
+		enemy.vida -= 20
+	else:
+		print(\"haz fallado el contra\")
+	
+	
 "
 
 [node name="node_2d" type="Node2D" groups=["jugador"]]

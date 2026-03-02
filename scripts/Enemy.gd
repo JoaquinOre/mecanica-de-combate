@@ -5,15 +5,11 @@ enum Pose { IZQUIERDA, ARRIBA, DERECHA }
 @onready var Att_arr = $ColorRect/Attack_arr
 @export var node_2d : Node2D
 var enemyAttack = false
+var vida = 100
+var postura = 0
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	ocultar_ataque()
-
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
 
 
 func esperar_para_atacar():
@@ -37,16 +33,12 @@ func evaluar_ataque(dir):
 	var blockeo = false
 	if dir == Pose.IZQUIERDA and node_2d.escudo_izq.visible:
 		blockeo = true
-	if dir == Pose.DERECHA and node_2d.escudo_der.visible:
+	elif dir == Pose.DERECHA and node_2d.escudo_der.visible:
 		blockeo = true
-	if dir == Pose.ARRIBA and node_2d.escudo_arr.visible:
+	elif dir == Pose.ARRIBA and node_2d.escudo_arr.visible:
 		blockeo = true
-	
-	if blockeo == true:
-		print("el jugador blockeó el ataque")
-	else:
+	else: 
 		node_2d.vida -= 20
-		print("¡Golpe acertado al jugador!")
 		print(node_2d.vida)
 	
 	ocultar_ataque()
