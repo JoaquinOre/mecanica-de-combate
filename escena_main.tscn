@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://cov5iocgbnme0"]
+
+[ext_resource type="Script" uid="uid://btf0yyds4chfw" path="res://escena_main.gd" id="1_nffdk"]
+[ext_resource type="PackedScene" uid="uid://jjc8ghqb88y0" path="res://node_2d.tscn" id="1_ysnop"]
+[ext_resource type="PackedScene" uid="uid://dl7n3mny2jn1q" path="res://enemy.tscn" id="2_hjd1e"]
+
+[node name="Escena main" type="Node2D"]
+script = ExtResource("1_nffdk")
+
+[node name="Node2D" parent="." instance=ExtResource("1_ysnop")]
+position = Vector2(311, 498)
+
+[node name="Node2D2" parent="." instance=ExtResource("2_hjd1e")]
+position = Vector2(850, 308)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(659, 269)
+offset = Vector2(-0.34, 5.465)
+zoom = Vector2(0.63, 0.63)

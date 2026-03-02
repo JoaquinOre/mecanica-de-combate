@@ -1,0 +1,98 @@
+[gd_scene load_steps=2 format=3 uid="uid://jjc8ghqb88y0"]
+
+[sub_resource type="GDScript" id="GDScript_y32ns"]
+script/source = "extends Node
+@onready var escudo_izq = %escudo_izq
+@onready var escudo_der = %escudo_der
+@onready var escudo_arr = %escudo_arr
+var vida = 100 
+func _ready():
+	escudo_izq.visible = false
+	escudo_der.visible = false
+	escudo_arr.visible = false
+	
+func _process(delta: float) -> void:
+	
+	if Input.is_action_just_pressed(\"IZQUIERDA\"):
+		Escudo(\"izq\")
+	if Input.is_action_just_pressed(\"DERECHA\"):
+		Escudo(\"der\")
+	if Input.is_action_just_pressed(\"ARRIBA\"):
+		Escudo(\"arr\")
+
+
+
+func Escudo(posicion):
+	
+	escudo_izq.visible = false
+	escudo_der.visible = false
+	escudo_arr.visible = false
+	
+	if posicion == \"izq\":
+		escudo_izq.visible = true
+	elif posicion == \"der\":
+		escudo_der.visible = true
+	elif posicion == \"arr\":
+		escudo_arr.visible = true
+	else :
+		await get_tree().create_timer(0.5).timeout
+		escudo_izq.visible = false
+		escudo_der.visible = false
+		escudo_arr.visible = false
+"
+
+[node name="node_2d" type="Node2D" groups=["jugador"]]
+position = Vector2(1, 0)
+script = SubResource("GDScript_y32ns")
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="CharacterBody2D"]
+offset_left = -58.0
+offset_top = -154.0
+offset_right = 56.0
+offset_bottom = 159.0
+color = Color(0.41115144, 0.4002978, 0.7816141, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="escudo_izq" type="ColorRect" parent="CharacterBody2D/ColorRect"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -249.0
+offset_top = -96.5
+offset_right = -176.0
+offset_bottom = 68.5
+metadata/_edit_use_anchors_ = true
+
+[node name="escudo_der" type="ColorRect" parent="CharacterBody2D/ColorRect"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 172.0
+offset_top = -102.5
+offset_right = 245.0
+offset_bottom = 62.5
+metadata/_edit_use_anchors_ = true
+
+[node name="escudo_arr" type="ColorRect" parent="CharacterBody2D/ColorRect"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -80.0
+offset_top = -292.5
+offset_right = 88.0
+offset_bottom = -221.5
+metadata/_edit_use_anchors_ = true
