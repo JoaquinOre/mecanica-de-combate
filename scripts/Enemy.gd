@@ -1,9 +1,14 @@
 extends Node2D
 enum Pose { IZQUIERDA, ARRIBA, DERECHA }
+
+var patron_normal = [Pose.IZQUIERDA, Pose.ARRIBA, Pose.DERECHA]
+var patron_fuerte = [Pose.ARRIBA,Pose.DERECHA,Pose.ARRIBA]
+var indice = 0 
+var combo_actual = []
 @onready var Att_izq = $ColorRect/Attack_izq
 @onready var Att_der = $ColorRect/Attack_der
 @onready var Att_arr = $ColorRect/Attack_arr
-@export var node_2d : Node2D
+@export var jugador : Node2D
 var enemyAttack = false
 var vida = 100
 var postura = 0
@@ -15,35 +20,51 @@ func _ready() -> void:
 func esperar_para_atacar():
 	await get_tree().create_timer(0.7).timeout
 	print("preparando el ataque")
-	preparar_ataque()
+	combo_actual = patron_normal
+	if indice >= combo_actual.size():
+		enemyAttack = false
+		indice = 0
+	if enemyAttack == true :
+		preparar_ataque()
+
 
 func preparar_ataque():
-	var direccion = [Pose.IZQUIERDA, Pose.ARRIBA, Pose.DERECHA].pick_random()
+	var direccion = combo_actual[indice]
 	ocultar_ataque()
-	if direccion == Pose.IZQUIERDA:
-		Att_izq.visible = true
-	if direccion == Pose.DERECHA:
-		Att_der.visible = true
-	if direccion == Pose.ARRIBA:
-		Att_arr.visible = true
+	if direccion == Pose.IZQUIERDA: Att_izq.visible = true
+	if direccion == Pose.DERECHA: Att_der.visible = true
+	if direccion == Pose.ARRIBA: Att_arr.visible = true
 	await get_tree().create_timer(0.7).timeout
+	indice += 1
 	evaluar_ataque(direccion)
+
+
 
 func evaluar_ataque(dir):
 	var blockeo = false
-	if dir == Pose.IZQUIERDA and node_2d.escudo_izq.visible:
+	if dir == Pose.IZQUIERDA and jugador.escudo_izq.visible:
 		blockeo = true
-	elif dir == Pose.DERECHA and node_2d.escudo_der.visible:
+		postura +=1
+	elif dir == Pose.DERECHA and jugador.escudo_der.visible:
 		blockeo = true
-	elif dir == Pose.ARRIBA and node_2d.escudo_arr.visible:
+		postura +=1
+	elif dir == Pose.ARRIBA and jugador.escudo_arr.visible:
 		blockeo = true
+		postura +=1
 	else: 
-		node_2d.vida -= 20
-		print(node_2d.vida)
-	
+		jugador.vida -= 20
+		print(jugador.vida)
 	ocultar_ataque()
-	if enemyAttack == true:
+	if indice >= combo_actual.size():
+		enemyAttack = false
+		print(enemyAttack)
+		indice = 0
+	else:
 		preparar_ataque()
+	#if postura == 3:
+		#enemyAttack = false
+		#jugador.contra = true
+		#jugador.contra_ataque()
 
 func ocultar_ataque():
 	Att_izq.visible = false

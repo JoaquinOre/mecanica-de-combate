@@ -1,12 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://jjc8ghqb88y0"]
+[gd_scene load_steps=3 format=3 uid="uid://jjc8ghqb88y0"]
+
+[ext_resource type="Script" uid="uid://d165k252mom8q" path="res://nodos/combat_control.gd" id="1_g06s8"]
 
 [sub_resource type="GDScript" id="GDScript_y32ns"]
 script/source = "extends Node
+class_name Jugador
+
 @onready var escudo_izq = %escudo_izq
 @onready var escudo_der = %escudo_der
 @onready var escudo_arr = %escudo_arr
-@onready var timer_contra = %contrataque
+@onready var timer_contra = %Timer
 @export var enemy : Node2D 
+@onready var contra = false
 var vida = 100 
 func _ready():
 	escudo_izq.visible = false
@@ -53,12 +58,13 @@ func Attack():
 	pass
 
 # contra ataque no funciona  
-func contrataque():
+func contra_ataque():
 	print(\"puedes contratacar! presiona SPACE\")
 	timer_contra.start()
 	if Input.is_action_just_pressed(\"Space\") and !timer_contra.is_stopped():
 		print(\"haz contratacado!\")
 		enemy.vida -= 20
+		timer_contra.is_stopped()
 	else:
 		print(\"haz fallado el contra\")
 	
@@ -120,3 +126,10 @@ offset_top = -292.5
 offset_right = 88.0
 offset_bottom = -221.5
 metadata/_edit_use_anchors_ = true
+
+[node name="CombatControl" type="Node" parent="."]
+script = ExtResource("1_g06s8")
+
+[node name="Timer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 2.0

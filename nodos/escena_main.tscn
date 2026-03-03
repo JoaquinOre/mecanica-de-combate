@@ -11,14 +11,11 @@ script = ExtResource("1_d33v7")
 position = Vector2(311, 498)
 enemy = NodePath("../Node2D2")
 
-[node name="Node2D2" parent="." node_paths=PackedStringArray("node_2d") instance=ExtResource("3_84e6e")]
+[node name="Node2D2" parent="." node_paths=PackedStringArray("jugador") instance=ExtResource("3_84e6e")]
 position = Vector2(850, 308)
-node_2d = NodePath("../Node2D")
+jugador = NodePath("../Node2D")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(659, 269)
 offset = Vector2(-0.34, 5.465)
 zoom = Vector2(0.63, 0.63)
-
-[node name="contrataque" type="Timer" parent="."]
-unique_name_in_owner = true
