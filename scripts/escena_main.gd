@@ -10,9 +10,8 @@ func _ready() -> void:
 
 
 func turno_del_enemigo():
-	enemigo.enemyAttack = true
 	enemigo.esperar_para_atacar()
-	if (enemigo.enemyAttack == false):
+	if !enemigo.enemyAttack:
 		turno_del_jugador()
 
 func turno_del_jugador():

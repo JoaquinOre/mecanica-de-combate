@@ -6,72 +6,104 @@
 script/source = "extends Node
 class_name Jugador
 
+# --- REFERENCIAS ---
 @onready var escudo_izq = %escudo_izq
 @onready var escudo_der = %escudo_der
 @onready var escudo_arr = %escudo_arr
 @onready var timer_contra = %Timer
 @export var enemy : Node2D 
+
+# --- ESTADOS ---
+enum Estado { IDLE, BLOQUEANDO, CONTRA, TURNO_ATAQUE }
+var estado_actual = Estado.IDLE
+
+# --- VARIABLES ---
 @onready var contra = false
 var vida = 100 
+
 func _ready():
-	escudo_izq.visible = false
-	escudo_der.visible = false
-	escudo_arr.visible = false
-	
-func _process(delta: float) -> void:
-	
+	ocultar_escudos()
+
+func _process(_delta: float) -> void:
+	# La máquina de estados: según en qué estado estemos, el código hace cosas distintas
+	match estado_actual:
+		Estado.IDLE:
+			procesar_input_bloqueo()
+			
+		Estado.BLOQUEANDO:
+			# Aquí podríamos poner un timer para que el escudo se quite solo
+			procesar_input_bloqueo()
+			
+		Estado.CONTRA:
+			# Aquí el código SÍ se queda esperando el espacio
+			if Input.is_action_just_pressed(\"Space\"):
+				ejecutar_contra_exitoso()
+				
+		Estado.TURNO_ATAQUE:
+			procesar_input_ataque()
+
+# --- LÓGICA DE INPUTS ---
+
+func procesar_input_bloqueo():
 	if Input.is_action_just_pressed(\"IZQUIERDA\"):
-		Escudo(\"izq\")
-	if Input.is_action_just_pressed(\"DERECHA\"):
-		Escudo(\"der\")
-	if Input.is_action_just_pressed(\"ARRIBA\"):
-		Escudo(\"arr\")
- 
+		activar_escudo(\"izq\")
+	elif Input.is_action_just_pressed(\"DERECHA\"):
+		activar_escudo(\"der\")
+	elif Input.is_action_just_pressed(\"ARRIBA\"):
+		activar_escudo(\"arr\")
 
+func procesar_input_ataque():
+	if Input.is_action_just_pressed(\"opcion 1\"):
+		print(\"Ataque normal realizado\")
+		enemy.vida -= 20
+		volver_a_idle()
+	elif Input.is_action_just_pressed(\"opcion 2\"):
+		print(\"Ataque fuerte realizado\")
+		enemy.vida -= 30
+		volver_a_idle()
 
-func Escudo(posicion):
+# --- ACCIONES ---
+
+func activar_escudo(posicion):
+	ocultar_escudos()
+	estado_actual = Estado.BLOQUEANDO
+	
+	if posicion == \"izq\": escudo_izq.visible = true
+	elif posicion == \"der\": escudo_der.visible = true
+	elif posicion == \"arr\": escudo_arr.visible = true
+	
+	# Opcional: El escudo se apaga tras medio segundo
+	await get_tree().create_timer(0.5).timeout
+	if estado_actual == Estado.BLOQUEANDO:
+		volver_a_idle()
+
+func contra_ataque():
+	print(\"¡Puedes contraatacar! Presiona SPACE\")
+	estado_actual = Estado.CONTRA
+	timer_contra.start() # El timer define cuánto tiempo tiene el jugador
+
+func _on_timer_timeout(): # Conecta la señal timeout de tu Timer aquí
+	if estado_actual == Estado.CONTRA:
+		print(\"¡Se acabó el tiempo del contraataque!\")
+		volver_a_idle()
+
+func ejecutar_contra_exitoso():
+	print(\"¡Has contraatacado con éxito!\")
+	enemy.vida -= 20
+	timer_contra.stop()
+	volver_a_idle()
+
+func volver_a_idle():
+	ocultar_escudos()
+	estado_actual = Estado.IDLE
+
+func ocultar_escudos():
 	escudo_izq.visible = false
 	escudo_der.visible = false
 	escudo_arr.visible = false
-	
-	if posicion == \"izq\":
-		escudo_izq.visible = true
-	elif posicion == \"der\":
-		escudo_der.visible = true
-	elif posicion == \"arr\":
-		escudo_arr.visible = true
-	else :
-		await get_tree().create_timer(0.5).timeout
-		escudo_izq.visible = false
-		escudo_der.visible = false
-		escudo_arr.visible = false
-
-func Attack():
-	print(\"turno del jugador\")
-	print(\"escogue los siguientes ataques\\n1: ataque normal\\n2: ataque fuerte\")
-	if Input.is_action_just_pressed(\"opcion 1\"):
-		print(\"ataque numero 1 realizado\")
-		enemy.vida -= 20
-	elif Input.is_action_just_pressed(\"opcion 2\"):
-		print(\"ataque numero 2 realizado\")
-		enemy.vida -= 30
-	pass
-
-# contra ataque no funciona  
-func contra_ataque():
-	print(\"puedes contratacar! presiona SPACE\")
-	timer_contra.start()
-	if Input.is_action_just_pressed(\"Space\") and !timer_contra.is_stopped():
-		print(\"haz contratacado!\")
-		enemy.vida -= 20
-		timer_contra.is_stopped()
-	else:
-		print(\"haz fallado el contra\")
-	
-	
 "
 
-[node name="node_2d" type="Node2D" groups=["jugador"]]
+[node name="jugador" type="Node2D"]
 position = Vector2(1, 0)
 script = SubResource("GDScript_y32ns")
 
