@@ -1,12 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://jjc8ghqb88y0"]
+[gd_scene load_steps=24 format=3 uid="uid://jjc8ghqb88y0"]
 
 [ext_resource type="Script" uid="uid://d165k252mom8q" path="res://nodos/combat_control.gd" id="1_g06s8"]
+[ext_resource type="Texture2D" uid="uid://dqfvauqkbl8fv" path="res://sprites/New Piskel.png" id="1_uxww3"]
 
 [sub_resource type="GDScript" id="GDScript_y32ns"]
 script/source = "extends Node
 class_name Jugador
 
 # --- REFERENCIAS ---
+@onready var animacion = $CharacterBody2D/AnimatedSprite2D
 @onready var escudo_izq = %escudo_izq
 @onready var escudo_der = %escudo_der
 @onready var escudo_arr = %escudo_arr
@@ -14,7 +16,7 @@ class_name Jugador
 @export var enemy : Node2D 
 
 # --- ESTADOS ---
-enum Estado { IDLE, BLOQUEANDO, CONTRA, TURNO_ATAQUE }
+enum Estado { IDLE, BLOQUEANDO, CONTRA, ATAQUE }
 var estado_actual = Estado.IDLE
 
 # --- VARIABLES ---
@@ -25,44 +27,45 @@ func _ready():
 	ocultar_escudos()
 
 func _process(_delta: float) -> void:
-	# La máquina de estados: según en qué estado estemos, el código hace cosas distintas
 	match estado_actual:
 		Estado.IDLE:
 			procesar_input_bloqueo()
-			
 		Estado.BLOQUEANDO:
-			# Aquí podríamos poner un timer para que el escudo se quite solo
 			procesar_input_bloqueo()
-			
 		Estado.CONTRA:
-			# Aquí el código SÍ se queda esperando el espacio
 			if Input.is_action_just_pressed(\"Space\"):
 				ejecutar_contra_exitoso()
-				
-		Estado.TURNO_ATAQUE:
+		Estado.ATAQUE:
+			print(\"turno del jugador\")
 			procesar_input_ataque()
 
-# --- LÓGICA DE INPUTS ---
+
 
 func procesar_input_bloqueo():
 	if Input.is_action_just_pressed(\"IZQUIERDA\"):
 		activar_escudo(\"izq\")
+		animacion.play(\"esquive_izq\")
 	elif Input.is_action_just_pressed(\"DERECHA\"):
 		activar_escudo(\"der\")
+		animacion.play(\"esquive_der\")
 	elif Input.is_action_just_pressed(\"ARRIBA\"):
 		activar_escudo(\"arr\")
+		animacion.play(\"equive_arr\")
 
 func procesar_input_ataque():
-	if Input.is_action_just_pressed(\"opcion 1\"):
+	estado_actual = Estado.ATAQUE
+	if Input.is_action_pressed(\"opcion 1\"):
 		print(\"Ataque normal realizado\")
+		animacion.play(\"attack\")
 		enemy.vida -= 20
 		volver_a_idle()
-	elif Input.is_action_just_pressed(\"opcion 2\"):
+		
+	elif Input.is_action_pressed(\"opcion 2\"):
 		print(\"Ataque fuerte realizado\")
 		enemy.vida -= 30
+		
 		volver_a_idle()
 
-# --- ACCIONES ---
 
 func activar_escudo(posicion):
 	ocultar_escudos()
@@ -72,7 +75,7 @@ func activar_escudo(posicion):
 	elif posicion == \"der\": escudo_der.visible = true
 	elif posicion == \"arr\": escudo_arr.visible = true
 	
-	# Opcional: El escudo se apaga tras medio segundo
+	
 	await get_tree().create_timer(0.5).timeout
 	if estado_actual == Estado.BLOQUEANDO:
 		volver_a_idle()
@@ -80,13 +83,14 @@ func activar_escudo(posicion):
 func contra_ataque():
 	print(\"¡Puedes contraatacar! Presiona SPACE\")
 	estado_actual = Estado.CONTRA
-	timer_contra.start() # El timer define cuánto tiempo tiene el jugador
+	timer_contra.start()
 
-func _on_timer_timeout(): # Conecta la señal timeout de tu Timer aquí
-	if estado_actual == Estado.CONTRA:
+
+func _on_timer_timeout(): 
+	if estado_actual == Estado.CONTRA and timer_contra.timeout:
 		print(\"¡Se acabó el tiempo del contraataque!\")
 		volver_a_idle()
-
+ 
 func ejecutar_contra_exitoso():
 	print(\"¡Has contraatacado con éxito!\")
 	enemy.vida -= 20
@@ -95,6 +99,7 @@ func ejecutar_contra_exitoso():
 
 func volver_a_idle():
 	ocultar_escudos()
+	animacion.play(\"idle\")
 	estado_actual = Estado.IDLE
 
 func ocultar_escudos():
@@ -103,6 +108,167 @@ func ocultar_escudos():
 	escudo_arr.visible = false
 "
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_sfjlq"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(0, 0, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3rl61"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(51, 0, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k15uf"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(102, 0, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_82jmx"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(153, 0, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xltds"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(0, 32, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f60cq"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(51, 32, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eu5ds"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(102, 32, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7qnqj"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(153, 32, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uxww3"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(0, 128, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e1om1"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(51, 128, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rm0yj"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(102, 128, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r4ssq"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(153, 128, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5phhs"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(102, 192, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_as5rr"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(153, 192, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6o1yr"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(0, 224, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mj0un"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(153, 160, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uib7q"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(0, 192, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3j0xv"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(51, 192, 51, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vpeky"]
+atlas = ExtResource("1_uxww3")
+region = Rect2(0, 0, 51, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_e1om1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sfjlq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3rl61")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k15uf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_82jmx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xltds")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f60cq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eu5ds")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7qnqj")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uxww3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e1om1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rm0yj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r4ssq")
+}],
+"loop": false,
+"name": &"equive_arr",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5phhs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_as5rr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6o1yr")
+}],
+"loop": false,
+"name": &"esquive_der",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mj0un")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uib7q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3j0xv")
+}],
+"loop": false,
+"name": &"esquive_izq",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vpeky")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
 [node name="jugador" type="Node2D"]
 position = Vector2(1, 0)
 script = SubResource("GDScript_y32ns")
@@ -110,6 +276,7 @@ script = SubResource("GDScript_y32ns")
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="CharacterBody2D"]
+visible = false
 offset_left = -58.0
 offset_top = -154.0
 offset_right = 56.0
@@ -119,6 +286,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="escudo_izq" type="ColorRect" parent="CharacterBody2D/ColorRect"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -133,6 +301,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="escudo_der" type="ColorRect" parent="CharacterBody2D/ColorRect"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -147,6 +316,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="escudo_arr" type="ColorRect" parent="CharacterBody2D/ColorRect"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -159,9 +329,15 @@ offset_right = 88.0
 offset_bottom = -221.5
 metadata/_edit_use_anchors_ = true
 
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D"]
+sprite_frames = SubResource("SpriteFrames_e1om1")
+animation = &"attack"
+
 [node name="CombatControl" type="Node" parent="."]
 script = ExtResource("1_g06s8")
 
 [node name="Timer" type="Timer" parent="."]
 unique_name_in_owner = true
 wait_time = 2.0
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

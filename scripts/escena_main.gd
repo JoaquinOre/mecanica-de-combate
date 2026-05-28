@@ -1,18 +1,16 @@
 extends Node2D
 @onready var jugador = $Node2D
-@onready var enemigo = $Node2D2
+@onready var enemy = $Node2D2
 
 
 
 
 func _ready() -> void:
 	turno_del_enemigo()
-
+	#turno_del_jugador()
 
 func turno_del_enemigo():
-	enemigo.esperar_para_atacar()
-	if !enemigo.enemyAttack:
-		turno_del_jugador()
+	enemy.esperar_para_atacar()
 
 func turno_del_jugador():
-	jugador.Attack()
+	jugador.procesar_input_ataque()

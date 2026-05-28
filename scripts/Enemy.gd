@@ -25,6 +25,7 @@ func esperar_para_atacar():
 		preparar_ataque()
 
 
+
 func preparar_ataque():
 	var direccion = combo_actual[indice]
 	ocultar_ataque()
@@ -40,7 +41,6 @@ func preparar_ataque():
 func evaluar_ataque(dir):
 	
 	if dir == Pose.IZQUIERDA and jugador.escudo_izq.visible:
-		
 		postura +=1
 	elif dir == Pose.DERECHA and jugador.escudo_der.visible:
 		
